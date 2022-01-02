@@ -8,7 +8,7 @@ public class Lecture
 
     public Author Speaker { get; set; }
 
-    public Author Chair { get; set; }
+    public Session Session { get; set; }
 
     public Paper Paper_used { get; set; }
 
@@ -16,7 +16,7 @@ public class Lecture
                    DateTime when,
                    Author speaker,
                    Paper paper,
-                   Author session) =>
-        (Id, When, Speaker, Chair, Paper_used) =
+                   Session session) =>
+        (Id, When, Speaker, Session, Paper_used) =
             (lectureId, when, speaker, session, paper);
 }
