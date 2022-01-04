@@ -98,8 +98,12 @@
 
     private void HandleValidSubmit() => SessionService.CreateSession(createSessionModel);
 
-    private static string GetAuthorNameList(Paper paper)
+    private static string GetAuthorNameList(Paper? paper)
     {
+        if (paper == null)
+        {
+            return "";
+        }
         var displayNames = paper.Authors.Select(a => a.DisplayName);
 
         return string.Join(", ", displayNames);
