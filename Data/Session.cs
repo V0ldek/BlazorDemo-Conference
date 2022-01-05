@@ -12,4 +12,6 @@ public class Session
 
     public Session(int sessionId, DateTime when) =>
         (Id, When) = (sessionId, when);
+
+    
 }

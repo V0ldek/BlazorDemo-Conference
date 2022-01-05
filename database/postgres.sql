@@ -108,3 +108,10 @@ CREATE TRIGGER session_chair_cannot_conduct_lecture_trg
   ON "session"
   FOR EACH ROW
 EXECUTE PROCEDURE session_assert_chair_and_speaker_are_distinct_trgfn();
+
+
+insert into lecture ("when",session_id,speaker_id,paper_id) values
+	(CURRENT_DATE,1,3,2);
+
+insert into lecture ("when",session_id,speaker_id,paper_id) values
+	(CURRENT_DATE,2,5,4);

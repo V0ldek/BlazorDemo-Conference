@@ -3,6 +3,7 @@
 <PageTitle>Sessions</PageTitle>
 
 @using Conference.Data
+@inject PaperService PaperService
 @inject AuthorService AuthorService
 @inject SessionService SessionService
 
@@ -16,36 +17,28 @@
             <th>Id</th>
             <th>When</th>
             <th>Chair</th>
+            <th>Lecture</th>
+            <th>Speaker</th>
+            <th>Paper</th>
+            <th>Authors</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var session in sessions.OrderBy(a => a.When))
         {
-            RenderFragment hiddenContent = 
-                @<div>
-                    <p><b>Lectures:</b></p>
-                    <table class="table table-secondary">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var lecture in session.Lectures)
+            @foreach (var lecture in session.Lectures)
                             {
                                 <tr>
+                                    <td>@session.Id</td>
+                                    <td>@session.When</td>
+                                    <td>@session.Chair?.DisplayName</td>
                                     <td>@lecture.Id</td>
+                                    <td>@authors.ToList().Find(x => x.Id == lecture.SpeakerId).DisplayName </td>
+                                    <td>@papers.ToList().Find(x => x.Id == lecture.PaperId).Name </td>
+                                    <td> @GetAuthorNameList(@papers.ToList().Find(x => x.Id == lecture.PaperId))</td>
                                 </tr>
                             }
-                        </tbody>
-                    </table>
-                    <AddNewLectureForm Session=@session />
-                </div>;
-            <CollapsibleTableRow HiddenContent="@hiddenContent">
-                <td>@session.Id</td>
-                <td>@session.When</td>
-                <td>@session.Chair?.DisplayName</td>
-            </CollapsibleTableRow>
+
         }
     </tbody>
 </table>
@@ -77,16 +70,29 @@
 </EditForm>
 
 @code {
+
+    private static string GetAuthorNameList(Paper paper)
+    {
+        var displayNames = paper.Authors.Select(a => a.DisplayName);
+
+        return string.Join(", ", displayNames);
+    } 
+
+
     private CreateSession createSessionModel = new() { When = DateTime.Now };   
     
     private IReadOnlyList<Author> authors = Array.Empty<Author>();
 
     private IReadOnlyList<Session> sessions = Array.Empty<Session>();
 
+    private IReadOnlyList<Paper> papers = Array.Empty<Paper>();
+
     protected override void OnInitialized()
     {
         authors = AuthorService.GetAuthors();
         sessions = SessionService.GetSessions();
+        papers = PaperService.GetPapers();
+    
     }
 
     private void HandleValidSubmit() => SessionService.CreateSession(createSessionModel);

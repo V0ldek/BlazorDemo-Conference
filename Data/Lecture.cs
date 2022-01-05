@@ -6,6 +6,12 @@ public class Lecture
 
     public DateTime When { get; set; }
 
-    public Lecture(int lectureId, DateTime when) => 
-        (Id, When) = (lectureId, when);
+    public int PaperId {get; set;}
+
+    public int SessionId {get; set;}
+
+    public int SpeakerId {get; set;}
+
+    public Lecture(int lectureId, DateTime when, int paperId, int sessionId,int speakerId) => 
+        (Id, When,PaperId,SessionId,SpeakerId) = (lectureId, when,paperId,sessionId,speakerId);
 }
