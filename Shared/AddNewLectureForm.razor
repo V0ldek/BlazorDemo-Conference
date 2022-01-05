@@ -1,3 +1,4 @@
+
 @using Conference.Data;
 
 @inject LectureService LectureService;
@@ -66,6 +67,12 @@
         {
             errors.Add(nameof(createLectureModel.When), new (){
                 $"Session begins {Session.When:dd-MM-yyyy HH:mm}. The lecture cannot begin before then."
+            });
+        }
+
+        if(Session.Chair.Id == createLectureModel.SpeakerId) {
+            errors.Add(nameof(createLectureModel.SpeakerId), new (){
+                $"Session Chair cannot be equal to speaker!"
             });
         }
 
