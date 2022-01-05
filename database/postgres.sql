@@ -23,7 +23,9 @@ VALUES
 	('Stackless Processing of Streamed Trees', 'Databases'),
 	('A Relational Model of Data for Large Shared Data Banks', 'Databases'),
 	('SEQUEL: A Structured English Query Language', 'Programming Languages'),
-	('How to Match Jobs and Candidates - A Recruitment Support System Based on Feature Engineering and Advanced Analytics.', 'Recommender systems');
+	('How to Match Jobs and Candidates - A Recruitment Support System Based on Feature Engineering and Advanced Analytics.', 'Recommender systems'),
+	('Using genetic algorithms to optimize redundant data., Communications in Computer and Information Science', 'Databases'),
+	('Universal Query Language', 'Databases');
 
 -- SESSION is also a keyword. To tell SQL that we mean the table name,
 -- put it in double quotes. Same applies for WHEN as a keyword and column name.
@@ -35,18 +37,27 @@ CREATE TABLE "session" (
     chair_id INTEGER REFERENCES author NOT NULL
 );
 
+insert into "session" ("when", chair_id) values
+	(TIMESTAMP '2004-10-19 10:23:54', 1),
+	(TIMESTAMP '2016-07-07 10:23:54', 2),
+	(TIMESTAMP '2019-01-29 10:23:54', 3),
+	(TIMESTAMP '2020-11-15 10:23:54', 4);
+
 CREATE TABLE paper_author (
 	author_id INTEGER REFERENCES author NOT NULL,
 	paper_id INTEGER REFERENCES paper NOT NULL,
 	CONSTRAINT paper_paper_id_author_id_pkey PRIMARY KEY (paper_id, author_id)
 );
-
+select * from paper;
+select * from author a ;
 INSERT INTO paper_author (author_id, paper_id) VALUES
 	(1, 1),
 	(2, 4),
 	(3, 2),
 	(4, 3),
-	(5, 4);
+	(5, 4),
+	(2, 5),
+	(2, 6);
 
 -- TRIGGER ON INSERT OR UPDATE
 -- Chair of the session cannot conduct the lecture.
@@ -60,6 +71,37 @@ CREATE TABLE lecture (
     CONSTRAINT lecture_speaker_id_paper_id_fkey FOREIGN KEY (speaker_id, paper_id) REFERENCES paper_author(author_id, paper_id)
 );
 
+insert into lecture ("when", speaker_id, paper_id, session_id) values 
+	(TIMESTAMP '2004-10-19 10:25:54', 3, 2, 1),
+	(TIMESTAMP '2016-07-07 10:26:54', 1, 1, 2),
+	(TIMESTAMP '2019-01-29 10:27:54', 4, 3, 3),
+	(TIMESTAMP '2020-11-15 10:29:54', 2, 4, 4);
+
+-- Used to get sessions.
+SELECT  s.id AS sessionId, s.when, 
+		a.id AS authorId, a.name, a.surname, 
+		l.id as lectureId, l.when, 
+		a2.id as authorId, a2.name, a2.surname, 
+		p.id as paperId, p.name, p.classification,
+		a3.id as authorId, a3.name, a3.surname
+                FROM session s
+                JOIN author a
+                    ON s.chair_id = a.id
+				join lecture l 
+					on s.id = l.session_id
+				join author a2 
+					on a2.id = l.speaker_id
+				join paper p 
+					on p.id = l.paper_id
+				join paper_author pa 
+					on p.id = pa.paper_id
+				join author a3 
+					on a3.id = pa.author_id;
+                   
+                    join lecture l on a.id = l.speaker_id
+                   join paper_author pa on pa.author_id = a.id
+                  join paper p on pa.author_id = p.id;
+                  
 -- Triggers in Postgres must always call a special function that RETURNS TRIGGER.
 -- It has access to NEW and OLD special names, that contain the NEW inserted/updated
 -- row, and OLD contains the old row in case of an update. Accessing OLD during insert

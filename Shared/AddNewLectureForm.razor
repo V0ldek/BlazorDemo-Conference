@@ -69,6 +69,13 @@
             });
         }
 
+        if (createLectureModel.SpeakerId == Session.Chair.Id)
+        {
+            errors.Add(nameof(createLectureModel.When), new (){
+                $"Chair {Session.Chair.DisplayName} cannot be a lecture speaker."
+            });
+        }
+
         if (errors.Any())
         {
             validation?.DisplayErrors(errors);
