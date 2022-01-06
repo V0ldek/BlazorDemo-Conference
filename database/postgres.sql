@@ -98,9 +98,7 @@ SELECT  s.id AS sessionId, s.when,
 				join author a3 
 					on a3.id = pa.author_id;
                    
-                    join lecture l on a.id = l.speaker_id
-                   join paper_author pa on pa.author_id = a.id
-                  join paper p on pa.author_id = p.id;
+                  
                   
 -- Triggers in Postgres must always call a special function that RETURNS TRIGGER.
 -- It has access to NEW and OLD special names, that contain the NEW inserted/updated
