@@ -28,6 +28,9 @@
                         <thead>
                             <tr>
                                 <th>Id</th>
+                                <th>Speaker</th>
+                                <th>Paper</th>
+                                <th>Authors</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -35,6 +38,9 @@
                             {
                                 <tr>
                                     <td>@lecture.Id</td>
+                                    <td>@lecture.Speaker?.DisplayName</td>
+                                    <td>@lecture.Paper?.Name</td>
+                                    <td>@GetAuthorNameList(lecture)</td>
                                 </tr>
                             }
                         </tbody>
@@ -90,4 +96,13 @@
     }
 
     private void HandleValidSubmit() => SessionService.CreateSession(createSessionModel);
+
+    private static string GetAuthorNameList(Lecture lecture)
+    {
+        if (lecture.Paper is not null) {   
+            var displayNames = lecture.Paper.Authors.Select(a => a.DisplayName);
+            return string.Join(", ", displayNames);  
+        }
+        return string.Empty;
+    }
 }
