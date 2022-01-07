@@ -13,6 +13,8 @@ public sealed class SessionService
     public IReadOnlyList<Session> GetSessions() {
         var sessionDictionary = new Dictionary<int, Session>();
 
+        var lectureDictionary = new Dictionary<int, Lecture>();
+
         var sessions = _dbConnection.Query<Session, Author, Lecture, Author, Paper, Author, Session>(
             @"SELECT s.id AS sessionId, s.""when"", 
                      ch.id AS authorId, ch.name, ch.surname, 
@@ -36,24 +38,28 @@ public sealed class SessionService
             (s, ch, l, sp, p, a) =>
             {
                 Session? session;
+                Lecture? lecture;
 
                 if (!sessionDictionary.TryGetValue(s.Id, out session)) {
                     session = s;
                     sessionDictionary.Add(session.Id, session);
                 }
 
-                if (!session.Lectures.Exists(a => a.Id == l.Id)) {
+                if (l is not null && !lectureDictionary.TryGetValue(l.Id, out lecture)) {
+                    lecture = l;
+                    lectureDictionary.Add(lecture.Id, lecture);
                     p.Authors.Add(a);
                     l.Paper = p;
                     l.Speaker = sp;
                     session.Lectures.Add(l);
                 }
-                else {
-                    Lecture? lecture = session.Lectures.Find(x => x.Id == l.Id);
+                else if (l is not null) {
+                    lecture = session.Lectures.Find(x => x.Id == l.Id);
                     if (lecture is not null && lecture.Paper is not null) {
                         lecture.Paper.Authors.Add(a);
                     }
                 }
+
                 session.Chair = ch;
 
                 return session;
