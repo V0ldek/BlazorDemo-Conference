@@ -26,7 +26,7 @@
                 <td>@paper.Id</td>
                 <td>@paper.Name</td>
                 <td>@paper.Classification</td>
-                <td>@GetAuthorNameList(paper)</td>
+                <td>@paper.AuthorNames</td>
             </tr>
         }
     </tbody>
@@ -53,14 +53,11 @@
     <p>
         <label>
             Authors:
-            <RadzenListBox @bind-Value=@createPaperModel.AuthorIds 
-                Multiple="true" 
-                Data="@authors"
-                TextProperty="@nameof(Author.DisplayName)"
-                ValueProperty="@nameof(Author.Id)"></RadzenListBox>
+            <RadzenListBox @bind-Value=@createPaperModel.AuthorIds Multiple="true" Data="@authors"
+                TextProperty="@nameof(Author.DisplayName)" ValueProperty="@nameof(Author.Id)"></RadzenListBox>
         </label>
     </p>
-    
+
     <button type="submit">Submit</button>
 </EditForm>
 
@@ -72,11 +69,4 @@
     private void HandleValidSubmit() => PaperService.CreatePaper(createPaperModel);
 
     protected override void OnInitialized() => authors = AuthorService.GetAuthors();
-
-    private static string GetAuthorNameList(Paper paper)
-    {
-        var displayNames = paper.Authors.Select(a => a.DisplayName);
-
-        return string.Join(", ", displayNames);
-    } 
 }

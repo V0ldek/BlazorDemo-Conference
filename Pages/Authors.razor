@@ -47,13 +47,13 @@
             <InputText id="surname" @bind-Value="createAuthorModel.Surname" />
         </label>
     </p>
-    
+
     <button type="submit">Submit</button>
 </EditForm>
 
 @code {
     private CreateAuthor createAuthorModel = new();
 
-    private void HandleValidSubmit() => 
-        AuthorService.CreateAuthor(createAuthorModel);
+    private void HandleValidSubmit() =>
+    AuthorService.CreateAuthor(createAuthorModel);
 }
