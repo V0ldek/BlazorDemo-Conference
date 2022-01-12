@@ -11,7 +11,7 @@
     <p>
         <label>
             When:
-            <RadzenDatePicker id="when" @bind-Value="createLectureModel.When" ShowTime="true" ShowSeconds="false"/>
+            <RadzenDatePicker id="when" @bind-Value="createLectureModel.When" ShowTime="true" ShowSeconds="false" />
         </label>
         <label>
             Paper:
@@ -26,10 +26,10 @@
         <label>
             Speaker:
             <InputSelect id="speaker" @bind-Value="@createLectureModel.SpeakerId">
-                @if(createLectureModel.PaperId is not null)
+                @if (createLectureModel.PaperId is not null)
                 {
                     <option value="null">--------</option>
-                    @foreach (var author in papersById[createLectureModel.PaperId.Value].Authors.OrderBy(a => a.DisplayName))
+                    @foreach (var author in papersById[createLectureModel.PaperId.Value].Authors.OrderBy(a =>a.DisplayName))
                     {
                         <option value="@author.Id">@author.DisplayName</option>
                     }
@@ -50,6 +50,9 @@
     [Parameter, EditorRequired]
     public Session Session { get; set; } = null!;
 
+    [Parameter]
+    public Action? OnValidSubmit { get; set; }
+
     private Dictionary<int, Paper> papersById = new Dictionary<int, Paper>();
 
     private CreateLecture createLectureModel = new() { When = DateTime.Now };
@@ -64,8 +67,17 @@
 
         if (createLectureModel.When < Session.When)
         {
-            errors.Add(nameof(createLectureModel.When), new (){
+            errors.Add(nameof(createLectureModel.When), new()
+            {
                 $"Session begins {Session.When:dd-MM-yyyy HH:mm}. The lecture cannot begin before then."
+            });
+        }
+
+        if (createLectureModel.SpeakerId == Session.Chair!.Id)
+        {
+            errors.Add(nameof(createLectureModel.SpeakerId), new()
+            {
+                $"{Session.Chair.DisplayName} is the chair of the session and cannot be a speaker of one of the lectures in it."
             });
         }
 
@@ -79,9 +91,14 @@
             LectureService.CreateLecture(createLectureModel);
         }
 
+        if (OnValidSubmit is not null)
+        {
+            OnValidSubmit();
+        }
+
         return;
     }
 
-    protected override void OnInitialized() => 
+    protected override void OnInitialized() =>
         papersById = PaperService.GetPapers().ToDictionary(p => p.Id);
 }

@@ -8,6 +8,8 @@ public class Paper
 
     public string Classification { get; init; }
 
+    // This is now used in two places, so it was extracted from Papers.razor into a property
+    // to avoid code duplication.
     public string AuthorNames => string.Join(", ", Authors.Select(a => a.DisplayName));
 
     public HashSet<Author> Authors { get; init; } = new HashSet<Author>();

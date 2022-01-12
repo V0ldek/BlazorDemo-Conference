@@ -19,6 +19,11 @@
         </tr>
     </thead>
     <tbody>
+        <!-- 
+            The previous version was broken, when you do things in OnInitialize in Blazor 
+            they don't update when a form is submitted, so adding a new Lecture didn't
+            update the table. Querying directly from here fixes the issue...
+        -->
         @foreach (var session in SessionService.GetSessions().OrderBy(a => a.When))
         {
             RenderFragment hiddenContent =
@@ -45,7 +50,9 @@
                         }
                     </tbody>
                 </table>
-                <AddNewLectureForm Session=@session />
+                // ... and this OnValidSubmit binding makes it actually refresh when the
+                // Lecture form is submitted.
+                <AddNewLectureForm Session=@session OnValidSubmit=@StateHasChanged />
             </div>
         ;
             <CollapsibleTableRow HiddenContent="@hiddenContent">

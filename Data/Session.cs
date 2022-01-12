@@ -8,6 +8,8 @@ public class Session
 
     public Author? Chair { get; set; }
 
+    // Making this a HashSet gives us deduplication for free when mapping
+    // lectures in SessionService.
     public HashSet<Lecture> Lectures { get; init; } = new HashSet<Lecture>();
 
     public Session(int sessionId, DateTime when) =>
