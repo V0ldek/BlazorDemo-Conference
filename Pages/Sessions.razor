@@ -19,28 +19,42 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var session in sessions.OrderBy(a => a.When))
+        <!-- 
+            The previous version was broken, when you do things in OnInitialize in Blazor 
+            they don't update when a form is submitted, so adding a new Lecture didn't
+            update the table. Querying directly from here fixes the issue...
+        -->
+        @foreach (var session in SessionService.GetSessions().OrderBy(a => a.When))
         {
-            RenderFragment hiddenContent = 
-                @<div>
-                    <p><b>Lectures:</b></p>
-                    <table class="table table-secondary">
-                        <thead>
+            RenderFragment hiddenContent =
+        @<div>
+            <p><b>Lectures:</b></p>
+            <table class="table table-secondary">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Paper</th>
+                        <th>Authors</th>
+                        <th>Speaker</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var lecture in session.Lectures)
+                        {
                             <tr>
-                                <th>Id</th>
+                                <td>@lecture.Id</td>
+                                <td>@lecture.Paper?.Name</td>
+                                <td>@lecture.Paper?.AuthorNames</td>
+                                <td>@lecture.Speaker?.DisplayName</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var lecture in session.Lectures)
-                            {
-                                <tr>
-                                    <td>@lecture.Id</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <AddNewLectureForm Session=@session />
-                </div>;
+                        }
+                    </tbody>
+                </table>
+                // ... and this OnValidSubmit binding makes it actually refresh when the
+                // Lecture form is submitted.
+                <AddNewLectureForm Session=@session OnValidSubmit=@StateHasChanged />
+            </div>
+        ;
             <CollapsibleTableRow HiddenContent="@hiddenContent">
                 <td>@session.Id</td>
                 <td>@session.When</td>
@@ -77,16 +91,13 @@
 </EditForm>
 
 @code {
-    private CreateSession createSessionModel = new() { When = DateTime.Now };   
-    
-    private IReadOnlyList<Author> authors = Array.Empty<Author>();
+    private CreateSession createSessionModel = new() { When = DateTime.Now };
 
-    private IReadOnlyList<Session> sessions = Array.Empty<Session>();
+    private IReadOnlyList<Author> authors = Array.Empty<Author>();
 
     protected override void OnInitialized()
     {
         authors = AuthorService.GetAuthors();
-        sessions = SessionService.GetSessions();
     }
 
     private void HandleValidSubmit() => SessionService.CreateSession(createSessionModel);
