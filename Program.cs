@@ -9,6 +9,7 @@ var connectionString = builder.Configuration.GetConnectionString("postgres");
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthorService>();
+builder.Services.AddScoped<LectureService>();
 builder.Services.AddScoped<PaperService>();
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<IDbConnection>(_ => 

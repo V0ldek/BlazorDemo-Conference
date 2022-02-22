@@ -1,0 +1,26 @@
+<tr role="button" @onclick=Toggle>
+    @ChildContent
+</tr>
+@if(!collapsed)
+{
+    <tr>
+        <td colspan="100%">
+            <div class="flex-fill">
+                @HiddenContent
+            </div>
+        </td>
+    </tr>
+}
+
+@code
+{
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter, EditorRequired]
+    public RenderFragment HiddenContent { get; set; } = null!;
+
+    private bool collapsed = true;
+
+    private void Toggle() => collapsed = !collapsed;
+}
